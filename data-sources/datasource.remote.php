@@ -267,6 +267,8 @@ class RemoteDatasource extends DataSource implements iDatasource
     {
         $cachedData = $cache->read($cache_id);
 
+        //This does not work inside symphony admin panel because the url is not build here 
+        
         if (is_array($cachedData) && !empty($cachedData) && (time() < $cachedData['expiry'])) {
             $a = Widget::Anchor(__('Clear now'), SYMPHONY_URL . getCurrentPage() . 'clear_cache/');
             $wrapper->appendChild(
@@ -774,7 +776,7 @@ class RemoteDatasource extends DataSource implements iDatasource
             ));
             $data = self::transformResult(self::$url_result, $settings['format']);
             $cache_id = self::buildCacheID($settings);
-            self::getCache()->write($cache_id, $data, $settings['cache'], $params['rootelement']);
+            self::getCache()->write($cache_id, $data, $settings['cache'], $params['url']); //$params['rootelement']
         }
 
         return sprintf(
@@ -847,7 +849,7 @@ class RemoteDatasource extends DataSource implements iDatasource
 
             // Check for an existing Cache for this Datasource
             $cache_id = self::buildCacheID($this);
-            $cachedData = self::getCache()->read($cache_id, $this->dsParamROOTELEMENT);
+            $cachedData = self::getCache()->read($cache_id, $this->dsParamURL); //$this->dsParamROOTELEMENT)
             $writeToCache = null;
             $isCacheValid = true;
             $creation = DateTimeObj::get('c');
@@ -972,7 +974,7 @@ class RemoteDatasource extends DataSource implements iDatasource
                     $this->_force_empty_result = true;
                 } else {
                     if ($this->dsParamCACHE > 0 && $writeToCache) {
-                        self::getCache()->write($cache_id, $data, $this->dsParamCACHE, $this->dsParamROOTELEMENT);
+                        self::getCache()->write($cache_id, $data, $this->dsParamCACHE, $this->dsParamURL); //$this->dsParamROOTELEMENT
                     }
 
                     if (!empty($this->dsParamOUTPUTPARAM)) {
